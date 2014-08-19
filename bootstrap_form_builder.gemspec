@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'bootstrap_form_builder/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "bootstrap_form_builder"
+  spec.name          = "bs_form_builder"
   spec.version       = BootstrapFormBuilder::VERSION
   spec.authors       = ["Sean Geoghegan"]
   spec.email         = ["sean@tushare.com"]
