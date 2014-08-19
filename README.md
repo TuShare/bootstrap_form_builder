@@ -25,7 +25,7 @@ To use, pass the builder class into the ``form_for`` method in a Rails form and 
 
 ```
 <%= form_for(resource, 
-             :builder => HorizontalBootstrapFormBuilder,
+             :builder => BootstrapFormBuilder::HorizontalFormBuilder,
              :html => { :class => 'form-horizontal' }) do |f| %>
 ```
 
