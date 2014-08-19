@@ -18,7 +18,7 @@ Or install it yourself as:
 
 ## Usage
 
-Currently only supports (http://getbootstrap.com/css/#forms-horizontal)[horizontal forms].
+Currently only supports [horizontal forms](http://getbootstrap.com/css/#forms-horizontal).
 
 To use, pass the builder class into the ``form_for`` method in a Rails form and set the
 ``form-horizontal`` class on the form element:
@@ -32,7 +32,7 @@ To use, pass the builder class into the ``form_for`` method in a Rails form and 
 Then calling the usual form field methods will generate labels
 and form elements confirming to the Bootstrap markup. If there
 are errors on the object these will also be output using Bootstrap
-(http://getbootstrap.com/css/#forms-control-validation)[Validation States].
+[Validation States](http://getbootstrap.com/css/#forms-control-validation).
 
 ## Contributing
 
