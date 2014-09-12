@@ -38,8 +38,9 @@ class BootstrapFormBuilder::HorizontalFormBuilder < ActionView::Helpers::FormBui
 
   def check_box(name, opts = {})
     form_group(name) do
-      super(name, opts.reverse_merge(:class => 'form-control',
-                                     :placeholder => help(name)))
+      @template.content_tag(:div,
+                            @template.content_tag(:label, super(name, opts) + (help(name) || "&nbsp;").html_safe),
+                            :class => 'checkbox')
     end
   end
 
