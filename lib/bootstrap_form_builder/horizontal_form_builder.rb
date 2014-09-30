@@ -88,11 +88,11 @@ class BootstrapFormBuilder::HorizontalFormBuilder < ActionView::Helpers::FormBui
   end
 
   def col_wrap(html)
-    @template.content_tag(:div, html, :class => 'col-sm-7')
+    @template.content_tag(:div, html, :class => 'field')
   end
 
   def label(name, opts = {})
-    super(name, opts.reverse_merge(:class => 'col-sm-3 control-label'))
+    super(name, opts.reverse_merge(:class => 'control-label'))
   end
 
   def errors(name)
@@ -124,7 +124,7 @@ class BootstrapFormBuilder::HorizontalFormBuilder < ActionView::Helpers::FormBui
                           @template.
                             content_tag(:div,
                                         submit(label, :class => 'btn btn-primary'),
-                                        :class => 'col-sm-offset-3 col-sm-7'),
+                                        :class => 'button-group'),
                           :class => 'form-group')
   end
 
@@ -134,7 +134,7 @@ class BootstrapFormBuilder::HorizontalFormBuilder < ActionView::Helpers::FormBui
                             content_tag(:div,
                                         submit(:class => 'btn btn-primary') +
                                         " " + cancel_button(cancel_path),
-                                        :class => 'col-sm-offset-3 col-sm-7'),
+                                        :class => 'button-group'),
                           :class => 'form-group')
   end
 end
