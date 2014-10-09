@@ -15,6 +15,18 @@ class BootstrapFormBuilder::HorizontalFormBuilder < ActionView::Helpers::FormBui
     end
   end
 
+  def search_field(name, opts = {})
+    form_group(name) do
+      @template.content_tag(:div,
+                  super(name, opts.reverse_merge(:class => 'form-control',
+                                                 :placeholder => help(name))) +
+                  @template.content_tag(:span,
+                                        @template.content_tag(:span, '', :class => 'glyphicon glyphicon-search'),
+                                        :class => 'input-group-addon'),
+                  :class => 'input-group')
+    end
+  end
+
   def password_field(name, opts = {})
     form_group(name) do
       super(name, opts.reverse_merge(:class => 'form-control',
