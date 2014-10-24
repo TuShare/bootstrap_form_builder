@@ -56,20 +56,49 @@ class BootstrapFormBuilder::HorizontalFormBuilder < ActionView::Helpers::FormBui
     end
   end
 
+  # uses bootstrap option to stretch the buttons to the full enclosing width
+  # if you use this, you may need to add the following style to your
+  # stylesheet to re-hide the radio-button circle
+  # (because Bootstrap's one is too specific to deal with this):
+  #
+  # [data-toggle="buttons"] .btn input[type="radio"] {
+  #  position: absolute;
+  #  z-index: -1;
+  #  opacity: 0;
+  #  filter: alpha(opacity=0);
+  #}
+  #
+  def justified_radio_button_group(name, button_options, opts = {})
+    form_group(name) do
+      buttons = button_options.map do |button|
+        @template.content_tag(:div, radio_button_label(name, button), :class => 'btn-group')
+      end.join("\n").html_safe
+
+      @template.content_tag(:div,
+                            buttons,
+                            :class => 'btn-group btn-group-justified',
+                            :data => { :toggle => 'buttons' })
+    end
+  end
+
   def radio_button_group(name, button_options, opts = {})
     form_group(name) do
       buttons = button_options.map do |button|
-        label(name, :value => button, :class => 'btn btn-default') do
-          radio_button(name, button) +
-            I18n.t("#{object_name}.#{name}_options.#{button}",
-                   :scope => "helpers.label")
-        end
+        radio_button_label(name, button)
       end.join("\n").html_safe
 
       @template.content_tag(:div,
                             buttons,
                             :class => 'btn-group',
                             :data => { :toggle => 'buttons' })
+    end
+  end
+
+  def radio_button_label(name, button)
+    label(name, :value => button, :class => 'btn btn-default') do
+      radio_button(name, button) +
+        I18n.t("#{object_name}.#{name}_options.#{button}",
+               :scope => "helpers.label")
     end
   end
 
