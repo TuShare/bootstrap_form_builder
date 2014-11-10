@@ -135,8 +135,8 @@ class BootstrapFormBuilder::HorizontalFormBuilder < ActionView::Helpers::FormBui
   end
 
   def label(name, opts = {})
-    classes = Array(opts.fetch(:class, ''))
-    classes << 'control-label'
+    classes = Array(opts.fetch(:class, nil))
+    classes << 'control-label' if classes.empty?
     super(name, opts.merge(:class => classes.join(' ')))
   end
 
