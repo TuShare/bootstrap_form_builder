@@ -2,21 +2,21 @@
 #
 class BootstrapFormBuilder::HorizontalFormBuilder < ActionView::Helpers::FormBuilder
   def email_field(name, opts = {})
-    form_group(name, opts.slice(:label_options, :group_options)) do
+    form_group(name, opts.slice(:label_options, :group_options, :tip_options)) do
       super(name, opts.reverse_merge(:class => 'form-control',
                                      :placeholder => help(name)))
     end
   end
 
   def text_field(name, opts = {})
-    form_group(name, opts.slice(:label_options, :group_options)) do
+    form_group(name, opts.slice(:label_options, :group_options, :tip_options)) do
       super(name, opts.reverse_merge(:class => 'form-control',
                                      :placeholder => help(name)))
     end
   end
 
   def search_field(name, opts = {})
-    form_group(name, opts.slice(:label_options, :group_options)) do
+    form_group(name, opts.slice(:label_options, :group_options, :tip_options)) do
       @template.content_tag(:div,
                   super(name, opts.reverse_merge(:class => 'form-control',
                                                  :placeholder => help(name))) +
@@ -28,28 +28,28 @@ class BootstrapFormBuilder::HorizontalFormBuilder < ActionView::Helpers::FormBui
   end
 
   def password_field(name, opts = {})
-    form_group(name, opts.slice(:label_options, :group_options)) do
+    form_group(name, opts.slice(:label_options, :group_options, :tip_options)) do
       super(name, opts.reverse_merge(:class => 'form-control',
                                      :placeholder => help(name)))
     end
   end
 
   def date_field(name, opts = {})
-    form_group(name, opts.slice(:label_options, :group_options)) do
+    form_group(name, opts.slice(:label_options, :group_options, :tip_options)) do
       super(name, opts.reverse_merge(:class => 'form-control',
                                      :placeholder => help(name)))
     end
   end
 
   def number_field(name, opts = {})
-    form_group(name, opts.slice(:label_options, :group_options)) do
+    form_group(name, opts.slice(:label_options, :group_options, :tip_options)) do
       super(name, opts.reverse_merge(:class => 'form-control',
                                      :placeholder => help(name)))
     end
   end
 
   def check_box(name, opts = {})
-    form_group(name, opts.slice(:label_options, :group_options)) do
+    form_group(name, opts.slice(:label_options, :group_options, :tip_options)) do
       @template.content_tag(:div,
                             @template.content_tag(:label, super(name, opts) + (help(name) || "&nbsp;").html_safe),
                             :class => 'checkbox')
@@ -69,7 +69,7 @@ class BootstrapFormBuilder::HorizontalFormBuilder < ActionView::Helpers::FormBui
   #}
   #
   def justified_radio_button_group(name, button_options, opts = {})
-    form_group(name, opts.slice(:label_options, :group_options)) do
+    form_group(name, opts.slice(:label_options, :group_options, :tip_options)) do
       buttons = button_options.map do |button|
         @template.content_tag(:div, radio_button_label(name, button), :class => 'btn-group')
       end.join("\n").html_safe
@@ -82,7 +82,7 @@ class BootstrapFormBuilder::HorizontalFormBuilder < ActionView::Helpers::FormBui
   end
 
   def radio_button_group(name, button_options, opts = {})
-    form_group(name, opts.slice(:label_options, :group_options)) do
+    form_group(name, opts.slice(:label_options, :group_options, :tip_options)) do
       buttons = button_options.map do |button|
         radio_button_label(name, button)
       end.join("\n").html_safe
@@ -103,13 +103,13 @@ class BootstrapFormBuilder::HorizontalFormBuilder < ActionView::Helpers::FormBui
   end
 
   def select(name, choices, options = {}, html_options = {})
-    form_group(name, options.slice(:label_options, :group_options)) do
+    form_group(name, options.slice(:label_options, :group_options, :tip_options)) do
       super(name, choices, options, html_options.reverse_merge(:class => 'form-control'))
     end
   end
 
   def text_area(name, opts = {})
-    form_group(name, opts.slice(:label_options, :group_options)) do
+    form_group(name, opts.slice(:label_options, :group_options, :tip_options)) do
       super(name, opts.reverse_merge(:class => 'form-control',
                                      :placeholder => help(name)))
     end
@@ -125,7 +125,8 @@ class BootstrapFormBuilder::HorizontalFormBuilder < ActionView::Helpers::FormBui
 
     @template.content_tag(:div,
                           label(name, options.fetch(:label_options, {})) +
-                          col_wrap(block.call + errors(name)),
+                          col_wrap(block.call + errors(name)) +
+                          tip(name, options.fetch(:tip_options, {})),
                           group_options.merge(:class => classes.join(' ')))
   end
 
@@ -154,6 +155,14 @@ class BootstrapFormBuilder::HorizontalFormBuilder < ActionView::Helpers::FormBui
       I18n.t(i18n_name)
     else
       nil
+    end
+  end
+
+  def tip(name, options = {})
+    i18n_name = "helpers.tips.#{object_name}.#{name}"
+    if I18n.exists?(i18n_name)
+      options[:class] = (Array(options[:class]) + ['help-block']).join(' ')
+      @template.content_tag(:span, I18n.t(i18n_name), options)
     end
   end
 
