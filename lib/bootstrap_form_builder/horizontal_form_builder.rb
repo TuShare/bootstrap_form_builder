@@ -50,10 +50,20 @@ class BootstrapFormBuilder::HorizontalFormBuilder < ActionView::Helpers::FormBui
 
   def check_box(name, opts = {})
     form_group(name, opts.slice(:label_options, :group_options, :tip_options)) do
-      @template.content_tag(:div,
-                            @template.content_tag(:label, super(name, opts) + (help(name) || "&nbsp;").html_safe),
-                            :class => 'checkbox')
+      simple_check_box(name, opts)
     end
+  end
+
+  # A checkbox without the form group and control label
+  def simple_check_box(name, options = {}, checked_value = '1', unchecked_value = '0')
+    @template.content_tag(:div,
+                          @template.content_tag(:label,
+                                                @template.check_box(@object_name, name,
+                                                                    objectify_options(options),
+                                                                    checked_value,
+                                                                    unchecked_value) +
+                                                                    label_text(name).html_safe),
+                          :class => 'checkbox')
   end
 
   # uses bootstrap option to stretch the buttons to the full enclosing width
@@ -156,6 +166,10 @@ class BootstrapFormBuilder::HorizontalFormBuilder < ActionView::Helpers::FormBui
     else
       nil
     end
+  end
+
+  def label_text(name)
+    I18n.t("helpers.label.#{object_name}.#{name}", :default => "")
   end
 
   def tip(name, options = {})
