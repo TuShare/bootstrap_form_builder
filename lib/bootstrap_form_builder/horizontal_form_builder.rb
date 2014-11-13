@@ -186,11 +186,11 @@ class BootstrapFormBuilder::HorizontalFormBuilder < ActionView::Helpers::FormBui
                       :class => 'btn btn-default')
   end
 
-  def submit_button(label = "")
+  def submit_button(label = "", opts = {})
     @template.content_tag(:div,
                           @template.
                             content_tag(:div,
-                                        submit(label, :class => 'btn btn-primary'),
+                                        submit(label, opts.merge(:class => 'btn btn-primary')),
                                         :class => 'button-group'),
                           :class => 'form-group')
   end
