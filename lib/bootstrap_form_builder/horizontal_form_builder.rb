@@ -62,7 +62,7 @@ class BootstrapFormBuilder::HorizontalFormBuilder < ActionView::Helpers::FormBui
                                                                     objectify_options(options),
                                                                     checked_value,
                                                                     unchecked_value) +
-                                                                    label_text(name).html_safe),
+                                                                    label_description(name).html_safe),
                           :class => 'checkbox')
   end
 
@@ -168,7 +168,10 @@ class BootstrapFormBuilder::HorizontalFormBuilder < ActionView::Helpers::FormBui
     end
   end
 
-  def label_text(name)
+  def label_description(name)
+    # use description if provided, default to the label-text
+    desc = I18n.t("helpers.label.#{object_name}.#{name}_description", :default => "")
+    return desc if desc.present?
     I18n.t("helpers.label.#{object_name}.#{name}", :default => "")
   end
 
