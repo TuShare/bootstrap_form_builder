@@ -219,6 +219,7 @@ class BootstrapFormBuilder::HorizontalFormBuilder < ActionView::Helpers::FormBui
   end
 
   def validation_attributes(name)
+    return {} unless options[:validations]
     return {} unless object.respond_to?(:_validators)
 
     validation_attribute_map = {
