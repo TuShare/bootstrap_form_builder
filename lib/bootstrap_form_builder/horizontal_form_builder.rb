@@ -4,14 +4,16 @@ class BootstrapFormBuilder::HorizontalFormBuilder < ActionView::Helpers::FormBui
   def email_field(name, opts = {})
     form_group(name, opts.slice(:label_options, :group_options, :tip_options)) do
       super(name, opts.reverse_merge(:class => 'form-control',
-                                     :placeholder => help(name)))
+                                     :placeholder => help(name)).
+                       reverse_merge(validation_attributes(name)))
     end
   end
 
   def text_field(name, opts = {})
     form_group(name, opts.slice(:label_options, :group_options, :tip_options)) do
       super(name, opts.reverse_merge(:class => 'form-control',
-                                     :placeholder => help(name)))
+                                     :placeholder => help(name)).
+                       reverse_merge(validation_attributes(name)))
     end
   end
 
@@ -19,7 +21,8 @@ class BootstrapFormBuilder::HorizontalFormBuilder < ActionView::Helpers::FormBui
     form_group(name, opts.slice(:label_options, :group_options, :tip_options)) do
       @template.content_tag(:div,
                   super(name, opts.reverse_merge(:class => 'form-control',
-                                                 :placeholder => help(name))) +
+                                                 :placeholder => help(name)).
+                                   reverse_merge(validation_attributes(name))) +
                   @template.content_tag(:span,
                                         @template.content_tag(:span, '', :class => 'glyphicon glyphicon-search'),
                                         :class => 'input-group-addon'),
@@ -30,21 +33,24 @@ class BootstrapFormBuilder::HorizontalFormBuilder < ActionView::Helpers::FormBui
   def password_field(name, opts = {})
     form_group(name, opts.slice(:label_options, :group_options, :tip_options)) do
       super(name, opts.reverse_merge(:class => 'form-control',
-                                     :placeholder => help(name)))
+                                     :placeholder => help(name)).
+                       reverse_merge(validation_attributes(name)))
     end
   end
 
   def date_field(name, opts = {})
     form_group(name, opts.slice(:label_options, :group_options, :tip_options)) do
       super(name, opts.reverse_merge(:class => 'form-control',
-                                     :placeholder => help(name)))
+                                     :placeholder => help(name)).
+                       reverse_merge(validation_attributes(name)))
     end
   end
 
   def number_field(name, opts = {})
     form_group(name, opts.slice(:label_options, :group_options, :tip_options)) do
       super(name, opts.reverse_merge(:class => 'form-control',
-                                     :placeholder => help(name)))
+                                     :placeholder => help(name)).
+                       reverse_merge(validation_attributes(name)))
     end
   end
 
@@ -63,7 +69,7 @@ class BootstrapFormBuilder::HorizontalFormBuilder < ActionView::Helpers::FormBui
                                                                     checked_value,
                                                                     unchecked_value) +
                                                                     label_description(name).html_safe),
-                          :class => 'checkbox')
+                          :class => 'checkbox', :data => validation_attributes(name))
   end
 
   # uses bootstrap option to stretch the buttons to the full enclosing width
@@ -100,7 +106,8 @@ class BootstrapFormBuilder::HorizontalFormBuilder < ActionView::Helpers::FormBui
       @template.content_tag(:div,
                             buttons,
                             :class => 'btn-group',
-                            :data => { :toggle => 'buttons' })
+                            :data => { :toggle => 'buttons' }.
+                              merge(validation_attributes(name)))
     end
   end
 
@@ -114,14 +121,17 @@ class BootstrapFormBuilder::HorizontalFormBuilder < ActionView::Helpers::FormBui
 
   def select(name, choices, options = {}, html_options = {})
     form_group(name, options.slice(:label_options, :group_options, :tip_options)) do
-      super(name, choices, options, html_options.reverse_merge(:class => 'form-control'))
+      super(name, choices, options,
+            html_options.reverse_merge(:class => 'form-control').
+                         reverse_merge(validation_attributes(name)))
     end
   end
 
   def text_area(name, opts = {})
     form_group(name, opts.slice(:label_options, :group_options, :tip_options)) do
       super(name, opts.reverse_merge(:class => 'form-control',
-                                     :placeholder => help(name)))
+                                     :placeholder => help(name)).
+                       reverse_merge(validation_attributes(name)))
     end
   end
 
@@ -206,5 +216,35 @@ class BootstrapFormBuilder::HorizontalFormBuilder < ActionView::Helpers::FormBui
                                         " " + cancel_button(cancel_path),
                                         :class => 'button-group'),
                           :class => 'form-group')
+  end
+
+  def validation_attributes(name)
+    return {} unless options[:validations]
+    return {} unless object.respond_to?(:_validators)
+
+    validation_attribute_map = {
+      ActiveModel::Validations::PresenceValidator => proc { { :required => true } },
+      ActiveModel::Validations::InclusionValidator => proc {|validator|
+        # Inclusion is weird, in Rails if you have a radio button
+        # where you want one of the options selected, and they map
+        # to a boolean then using :presence doesn't work, because
+        # the presence check on false fails. Instead you have to use
+        # inclusion, so we can handle this here and map it to required
+        # validation attribute, this is kinda getting a bit hacky though,
+        # and may come back to bite us in the foot, so we limit the use
+        # to only those cases where true and false are the only options.
+        if validator.options[:in] == [true,false]
+          { :required => true }
+        else
+          { }
+        end
+      }
+    }
+
+    validators = object._validators.fetch(name, [])
+
+    validators.reduce({}) do |attributes, validator|
+      attributes.merge(validation_attribute_map.fetch(validator.class, proc {}).call(validator))
+    end
   end
 end
