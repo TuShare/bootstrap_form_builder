@@ -223,13 +223,28 @@ class BootstrapFormBuilder::HorizontalFormBuilder < ActionView::Helpers::FormBui
     return {} unless object.respond_to?(:_validators)
 
     validation_attribute_map = {
-      ActiveModel::Validations::PresenceValidator => { :required => true }
+      ActiveModel::Validations::PresenceValidator => proc { { :required => true } },
+      ActiveModel::Validations::InclusionValidator => proc {|validator|
+        # Inclusion is weird, in Rails if you have a radio button
+        # where you want one of the options selected, and they map
+        # to a boolean then using :presence doesn't work, because
+        # the presence check on false fails. Instead you have to use
+        # inclusion, so we can handle this here and map it to required
+        # validation attribute, this is kinda getting a bit hacky though,
+        # and may come back to bite us in the foot, so we limit the use
+        # to only those cases where true and false are the only options.
+        if validator.options[:in] == [true,false]
+          { :required => true }
+        else
+          { }
+        end
+      }
     }
 
     validators = object._validators.fetch(name, [])
 
     validators.reduce({}) do |attributes, validator|
-      attributes.merge(validation_attribute_map.fetch(validator.class, {}))
+      attributes.merge(validation_attribute_map.fetch(validator.class, proc {}).call(validator))
     end
   end
 end
