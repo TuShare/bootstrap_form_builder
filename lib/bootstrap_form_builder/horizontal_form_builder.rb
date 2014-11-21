@@ -238,6 +238,11 @@ class BootstrapFormBuilder::HorizontalFormBuilder < ActionView::Helpers::FormBui
         else
           { }
         end
+      },
+      ActiveModel::Validations::FormatValidator => proc {|validator|
+        # Because RegExp#to_s is weird we use inspect, but strip first and last /
+        { :'data-pattern' => validator.options[:with].inspect[1..-2],
+          :'data-pattern-message' => validator.options[:message] }
       }
     }
 
