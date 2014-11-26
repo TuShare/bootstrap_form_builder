@@ -119,6 +119,31 @@ class BootstrapFormBuilder::HorizontalFormBuilder < ActionView::Helpers::FormBui
     end
   end
 
+  def radio_group(name, button_options, opts = {})
+    form_group(name, opts.slice(:label_options, :group_options, :tip_options)) do
+      buttons = button_options.map do |button|
+        radio_label(name, button)
+      end.join("\n").html_safe
+
+      @template.content_tag(:div,
+                            buttons,
+                            :class => 'radio-group',
+                            :data => validation_attributes(name))
+    end
+  end
+
+  def radio_label(name, button)
+    label = label("#{name}_#{button}", :class => 'radio-label') do
+      radio_button(name, button) +
+        I18n.t("#{object_name}.#{name}_options.#{button}",
+               :scope => "helpers.label")
+    end
+
+    @template.content_tag(:div,
+                            label,
+                            :class => 'radio')
+  end
+
   def select(name, choices, options = {}, html_options = {})
     form_group(name, options.slice(:label_options, :group_options, :tip_options)) do
       super(name, choices, options,
