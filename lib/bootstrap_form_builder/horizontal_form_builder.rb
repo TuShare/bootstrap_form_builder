@@ -4,6 +4,10 @@ class BootstrapFormBuilder::HorizontalFormBuilder < ActionView::Helpers::FormBui
   def email_field(name, opts = {})
     form_group(name, opts.slice(:label_options, :group_options, :tip_options)) do
       super(name, opts.reverse_merge(:class => 'form-control',
+                                     :autocorrect => 'off',
+                                     :autocapitalize => 'off',
+                                     :autocorrect => 'off',
+                                     :spellcheck => 'off',
                                      :placeholder => help(name)).
                        reverse_merge(validation_attributes(name)))
     end
