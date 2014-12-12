@@ -247,11 +247,8 @@ class BootstrapFormBuilder::HorizontalFormBuilder < ActionView::Helpers::FormBui
                           :class => 'form-group')
   end
 
-  def validation_attributes(name)
-    return {} unless options[:validations]
-    return {} unless object.respond_to?(:_validators)
-
-    validation_attribute_map = {
+  def validation_attribute_map
+    {
       ActiveModel::Validations::PresenceValidator => proc { { :required => true } },
       ActiveModel::Validations::InclusionValidator => proc {|validator|
         # Inclusion is weird, in Rails if you have a radio button
@@ -269,11 +266,23 @@ class BootstrapFormBuilder::HorizontalFormBuilder < ActionView::Helpers::FormBui
         end
       },
       ActiveModel::Validations::FormatValidator => proc {|validator|
+        flasg, regex = nil, validator.options[:with].inspect.strip[1..-1] # kill leading slash
+        # flags (eg i) after trailing slash
+        regex,flags = regex.split('/') if regex.last != "/" 
+
         # Because RegExp#to_s is weird we use inspect, but strip first and last /
-        { :'data-pattern' => validator.options[:with].inspect[1..-2],
-          :'data-pattern-message' => validator.options[:message] }
+        opts = {:'data-pattern' => regex,
+                :'data-pattern-message' => validator.options[:message] }
+        opts[:'data-pattern-flags'] = flags if flags.present?
+        opts
       }
     }
+  end
+
+
+  def validation_attributes(name)
+    return {} unless options[:validations]
+    return {} unless object.respond_to?(:_validators)
 
     validators = object._validators.fetch(name, [])
 
