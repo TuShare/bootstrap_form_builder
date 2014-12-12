@@ -273,7 +273,7 @@ class BootstrapFormBuilder::HorizontalFormBuilder < ActionView::Helpers::FormBui
         # Because RegExp#to_s is weird we use inspect, but strip first and last /
         opts = {:'data-pattern' => regex,
                 :'data-pattern-message' => validator.options[:message] }
-        opts[:'data-flags'] = flags if flags.present?
+        opts[:'data-pattern-flags'] = flags if flags.present?
         opts
       }
     }
