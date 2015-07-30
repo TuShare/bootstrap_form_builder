@@ -232,7 +232,7 @@ class BootstrapFormBuilder::HorizontalFormBuilder < ActionView::Helpers::FormBui
     @template.content_tag(:div,
                           @template.
                             content_tag(:div,
-                                        submit(label, opts.merge(:class => 'btn btn-primary')),
+                                        submit(label, opts.reverse_merge(:class => 'btn btn-primary')),
                                         :class => 'button-group'),
                           :class => 'form-group')
   end
